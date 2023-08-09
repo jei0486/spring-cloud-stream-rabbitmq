@@ -1,0 +1,30 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
+    org.hibernate.type.descriptor.sql: trace
+#  level:
+#    root: INFO
+#    org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
+#    org.hibernate.type.descriptor.sql: INFO
+
+server.port: 8080
+
+spring:
+  cloud:
+    function:
+      definition: direct;broadcast
+    stream:
+      bindings:
+        direct-out-0:
+          destination: p2p-topic
+        broadcast-out-0:
+          destination: pubsub-topic
+  rabbitmq:
+    addresses: localhost
+    username: admin
+    password: admin
+  jackson:
+    default-property-inclusion: non_empty
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false

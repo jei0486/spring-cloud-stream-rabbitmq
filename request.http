@@ -1,0 +1,6 @@
+### /api/direct/{{message}}
+GET http://localhost:8080/api/direct/p2p-topic
+
+
+### /api/broadcast/{{message}}
+GET http://localhost:8080/api/broadcast/topic-test

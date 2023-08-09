@@ -1,0 +1,42 @@
+logging:
+  level:
+    root: INFO
+    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
+    org.hibernate.type.descriptor.sql: trace
+#  level:
+#    root: INFO
+#    org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
+#    org.hibernate.type.descriptor.sql: INFO
+
+
+server.port: 0
+
+spring:
+  cloud:
+    function:
+      definition: direct;broadcast
+    stream:
+      bindings:
+        direct-in-0:
+          binder: rabbit
+          destination: p2p-topic
+          group: p2p-group
+        broadcast-in-0:
+          destination: pubsub-topic
+      #--------------------------
+      # spring.cloud.stream.rabbit
+      #--------------------------
+      rabbit:
+        bindings:
+          direct-in-0:
+            consumer:
+              durableSubscription: true
+  rabbitmq:
+    addresses: localhost:5672
+    username: admin
+    password: admin
+  jackson:
+    default-property-inclusion: non_empty
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
