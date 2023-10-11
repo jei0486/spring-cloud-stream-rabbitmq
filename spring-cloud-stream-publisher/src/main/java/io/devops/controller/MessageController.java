@@ -1,18 +1,21 @@
-package io.devops.message;
+package io.devops.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.devops.model.MyMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import io.devops.message.MyMessage;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,12 +23,17 @@ import reactor.core.publisher.Mono;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping(path = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MessageController {
+
+
+    @Autowired
+    private ObjectMapper jsonMapper;
 
     EmitterProcessor<MyMessage> directProcessor = EmitterProcessor.create();
 
     EmitterProcessor<MyMessage> broadcastProcessor = EmitterProcessor.create();
+
+    private final EmitterProcessor<Message<?>> supplierProcessor = EmitterProcessor.create();
 
     @GetMapping(value = "/direct/{message}")
     public Mono<Void> directMessage(@PathVariable String message) {
@@ -44,6 +52,21 @@ public class MessageController {
         return Mono.just(message)
                    .doOnNext(s -> broadcastProcessor.onNext(MyMessage.builder().message(message).build()))
                    .then();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void handleRequest(@RequestBody String body, @RequestHeader(HttpHeaders.CONTENT_TYPE) Object contentType) throws Exception {
+        Map<String, String> payload = jsonMapper.readValue(body, Map.class);
+        String destinationName = payload.get("id");
+        Message<?> message = MessageBuilder.withPayload(payload)
+                .setHeader("spring.cloud.stream.sendto.destination", destinationName).build();
+        supplierProcessor.onNext(message);
+    }
+
+    @Bean
+    public Supplier<Flux<Message<?>>> supplier() {
+        return () -> supplierProcessor;
     }
 
     @Bean

@@ -1,3 +1,7 @@
+#------------------------------
+# producer
+#------------------------------
+
 logging:
   level:
     root: INFO
@@ -11,19 +15,50 @@ logging:
 server.port: 8080
 
 spring:
+  rabbitmq:
+    host: k8s-rabbitmq-rabbitqp-3007689dc1-0201f008dffe63dc.elb.ap-northeast-2.amazonaws.com
+    port: 5672
+    username: admin
+    password: Tobe1234
+#    host: localhost:5672
+#    username: admin
+#    password: admin
   cloud:
     function:
-      definition: direct;broadcast
+      definition: direct;broadcast;supplier;
     stream:
+      #------------------------------
+      # spring.cloud.stream.bindings
+      #------------------------------
       bindings:
-        direct-out-0:
-          destination: p2p-topic
-        broadcast-out-0:
-          destination: pubsub-topic
-  rabbitmq:
-    addresses: localhost
-    username: admin
-    password: admin
+        boardCreate:
+          destination: board-create-topic
+#        direct-in-0:
+#          binder: rabbit
+#          destination: p2p-topic
+#          group: p2p-group
+#        broadcast-in-0:
+#          destination: pubsub-topic
+#          group: pubsub-group
+#        receive1-in-0:
+#          destination: customerId-1
+#        receive2-in-0:
+#          destination: customerId-2
+      #------------------------------
+      # spring.cloud.stream.rabbit
+      #------------------------------
+#      rabbit:
+#        bindings:
+#          direct-out-0:
+#            producer:
+#              exchangeType: fanout
+#          broadcast-out-0:
+#            producer:
+#              exchangeType: fanout
+
+  #------------------------------
+  # spring.jackson
+  #------------------------------
   jackson:
     default-property-inclusion: non_empty
     serialization:

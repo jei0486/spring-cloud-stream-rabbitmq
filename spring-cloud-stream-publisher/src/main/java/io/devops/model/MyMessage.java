@@ -1,17 +1,16 @@
-package io.devops.message;
+package io.devops.model;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
+@ToString
 public class MyMessage implements Serializable {
 
     private Long id;
     private String message;
-
 }

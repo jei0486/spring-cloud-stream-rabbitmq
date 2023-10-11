@@ -1,6 +1,41 @@
 ### /api/direct/{{message}}
-GET http://localhost:8080/api/direct/p2p-topic
+GET http://localhost:8080/direct/p2p-topic
 
 
 ### /api/broadcast/{{message}}
-GET http://localhost:8080/api/broadcast/topic-test
+GET http://localhost:8080/broadcast/topic-test
+
+###
+
+# curl -H "Content-Type: application/json" -X POST -d '{"id":"customerId-1","bill-pay":"100"}' http://localhost:8080
+POST http://localhost:8080
+Content-Type: application/json
+
+{
+  "id": "customerId-1",
+  "bill-pay": "100"
+}
+
+###
+# curl -H "Content-Type: application/json" -X POST -d '{"id":"customerId-2","bill-pay":"150"}' http://localhost:8080
+POST http://localhost:8080
+Content-Type: application/json
+
+{
+  "id": "customerId-2",
+  "bill-pay": "150"
+}
+
+###
+POST http://localhost:8080/boards
+Content-Type: application/json
+
+{
+"title": "test insert 2023-09",
+"contents": "test insert 2023-09",
+"writeId": "user1",
+"writeName": "사용자1",
+"writeDate": "2023-09-26 12:20:41"
+}
+###
+

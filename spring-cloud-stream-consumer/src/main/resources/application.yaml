@@ -1,3 +1,60 @@
+#------------------------------
+# consumer
+#------------------------------
+
+server.port: 0
+
+spring:
+  #------------------------------
+  # spring.rabbitmq
+  #------------------------------
+  rabbitmq:
+    host: k8s-rabbitmq-rabbitqp-3007689dc1-0201f008dffe63dc.elb.ap-northeast-2.amazonaws.com
+    port: 5672
+    username: admin
+    password: Tobe1234
+
+  #    host: localhost:5672
+  #    username: admin
+  #    password: admin
+  cloud:
+    function:
+      definition: direct;broadcast;receive1;receive2;boardCreate;
+    stream:
+      #------------------------------
+      # spring.cloud.stream.bindings
+      #------------------------------
+      bindings:
+        direct-in-0:
+          binder: rabbit
+          destination: p2p-topic
+          group: p2p-group
+        broadcast-in-0:
+          destination: pubsub-topic
+          group: pubsub-group
+        receive1-in-0:
+          destination: customerId-1
+        receive2-in-0:
+          destination: customerId-2
+        boardCreate-in-0:
+          destination: board-create-topic
+      #--------------------------
+      # spring.cloud.stream.rabbit
+      #--------------------------
+      rabbit:
+        bindings:
+          direct-in-0:
+            consumer:
+              durableSubscription: true
+  #------------------------------
+  # spring.jackson
+  #------------------------------
+  jackson:
+    default-property-inclusion: non_empty
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+
 logging:
   level:
     root: INFO
@@ -7,36 +64,3 @@ logging:
 #    root: INFO
 #    org.springframework.web.reactive.function.client.ExchangeFunctions: INFO
 #    org.hibernate.type.descriptor.sql: INFO
-
-
-server.port: 0
-
-spring:
-  cloud:
-    function:
-      definition: direct;broadcast
-    stream:
-      bindings:
-        direct-in-0:
-          binder: rabbit
-          destination: p2p-topic
-          group: p2p-group
-        broadcast-in-0:
-          destination: pubsub-topic
-      #--------------------------
-      # spring.cloud.stream.rabbit
-      #--------------------------
-      rabbit:
-        bindings:
-          direct-in-0:
-            consumer:
-              durableSubscription: true
-  rabbitmq:
-    addresses: localhost:5672
-    username: admin
-    password: admin
-  jackson:
-    default-property-inclusion: non_empty
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
-
